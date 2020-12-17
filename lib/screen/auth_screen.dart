@@ -1,8 +1,10 @@
 import 'package:chat_app/widget/auth_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -19,6 +21,7 @@ var isLoading = false;
       String userName,
       String password,
       bool isLogin,
+      File userImage
       )async
   {
     try
@@ -34,10 +37,18 @@ var isLoading = false;
       else
       {
         _authResult = await _auth.createUserWithEmailAndPassword(email: email,  password: password);
+
+        final userImageRef = FirebaseStorage.instance.ref().child('user_image').child(_authResult.user.uid+'.jpg');
+
+        await userImageRef.putFile(userImage);
+
+        final url = await userImageRef.getDownloadURL();
+
         // ignore: deprecated_member_use
         Firestore.instance.collection('user').doc(_authResult.user.uid).setData({
           'username':userName,
           'email':email,
+          'imageUrl':url,
         });
       }
       setState(() {
