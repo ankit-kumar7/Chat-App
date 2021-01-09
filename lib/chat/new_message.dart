@@ -21,7 +21,7 @@ class _NewMessageState extends State<NewMessage> {
     final userData = await Firestore.instance.collection('user').doc(user.uid).get();
     // ignore: deprecated_member_use
     Firestore.instance.collection('chat').add({
-      'text':_newMessage,
+      'text':_newMessage.trim(),
       'createdAt':Timestamp.now(),
       'userId':user.uid,
       'userName':userData['username'],
@@ -41,16 +41,19 @@ class _NewMessageState extends State<NewMessage> {
           Expanded(
             child: TextField(
               controller: _controller,
+              maxLines: null,
+              textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 border:OutlineInputBorder(
                   borderRadius: BorderRadius.circular(15.0),
                 ),
-                labelText: "type message"
+                labelText: "type message",
               ),
               onChanged: (value)
               {
                 setState(() {
                   _newMessage = value;
+                  print(_newMessage.trim());
                   if(_newMessage.isEmpty)
                     {
                       FocusScope.of(context).unfocus();

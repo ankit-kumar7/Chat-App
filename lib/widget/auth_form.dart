@@ -59,6 +59,7 @@ class _AuthFormState extends State<AuthForm> {
   Widget build(BuildContext context) {
     return Center(
       child: Card(
+        //color: Colors.black12,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(60),
         ),

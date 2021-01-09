@@ -2,9 +2,10 @@ import 'package:chat_app/widget/auth_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
+
+import 'package:flutter/services.dart';
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -13,8 +14,11 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
 
-final _auth = FirebaseAuth.instance;
-var isLoading = false;
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  final _auth = FirebaseAuth.instance;
+  var isLoading = false;
+  bool showError = false;
 
   void _submitAuthForm(
       String email,
@@ -51,6 +55,7 @@ var isLoading = false;
           'imageUrl':url,
         });
       }
+      _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Login Successfully!")));
       setState(() {
         isLoading = false;
       });
@@ -73,6 +78,7 @@ var isLoading = false;
       setState(() {
         isLoading = false;
       });
+      _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please enter valid Username/Password")));
       print(error);
     }
   }
@@ -81,8 +87,21 @@ var isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: AuthForm(_submitAuthForm,isLoading),
+      key: _scaffoldKey,
+      //backgroundColor: Theme.of(context).primaryColor,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: Container(
+                  margin: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.10),
+                  child: Image.asset('assets/group_chat.png'),
+              ),
+            ),
+            AuthForm(_submitAuthForm,isLoading),
+          ],
+        ),
+      ),
     );
   }
 }
